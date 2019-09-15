@@ -347,11 +347,6 @@ public class Servidor extends javax.swing.JPanel {
         // TODO add your handling code here:
         this.panelBG.nextImgToBG();
         this.BASE64_BG = this.panelBG.getActualImgAsString();
-        System.err.println("-------------------------------------");
-        System.err.println("-------------------------------------");
-        System.err.println(this.BASE64_BG);
-        System.err.println("-------------------------------------");
-        System.err.println("-------------------------------------");
     }//GEN-LAST:event_jButton3ActionPerformed
 
     // ----------------------------------------------------------
