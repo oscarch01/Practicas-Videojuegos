@@ -24,6 +24,10 @@ public class client_game implements Runnable{
     public void end_connection(){
         status = false;
     }
+    
+    public void send_message(String msg){
+        this.msgnew = msg;
+    }
 
     @Override
     public void run() {
@@ -34,19 +38,21 @@ public class client_game implements Runnable{
             
             
             input = new DataInputStream(client.getInputStream());
-            while(input.available()>0){
-                String read = input.readUTF();
-                System.out.println(read);            
-            }            
+            output = new DataOutputStream(client.getOutputStream());
+            while(client.isConnected()){
+                while(input.available()>0){
+                    String read = input.readUTF();
+                    System.out.println(read);            
+                }            
 
-            if(!msg.equals(msgnew)){
-                output = new DataOutputStream(client.getOutputStream());
-                output.writeUTF(msgnew); 
-                msg = msgnew;
-            }
-            
-            if(!status){
-                client.close();
+                if(!msg.equals(msgnew)){
+                    output.writeUTF(msgnew); 
+                    msg = msgnew;
+                }
+
+                if(!status){
+                    client.close();
+                }
             }           
         } catch (IOException ex) {
             switch(ex.getMessage()){

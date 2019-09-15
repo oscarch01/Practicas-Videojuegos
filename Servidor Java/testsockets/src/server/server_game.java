@@ -40,7 +40,7 @@ public class server_game extends Observable implements Runnable {
     
     
     //  Descomposición de la lectura
-    private void splitRead(String read){
+    public String[] splitRead(String read){
         String[] arr = read.split(":");
         
         switch(arr[0]){
@@ -49,26 +49,33 @@ public class server_game extends Observable implements Runnable {
                 this.clientConnect((String)arr[1]);
                 break;
             }
+            case "QUIT":{
+                this.ClientDisconnect((String)arr[1]);
+                break;
+            }
         }
+        
+        return arr;
     }
     
     
     
     //  Conectar cliente
-    private void clientConnect(String client_info){
+    public void clientConnect(String client_info){
         String[] arr = client_info.split("\\|");
         String key = arr[0];
         String data = arr[1]+","+arr[2];
         
         
         if(!ml.arr_clients.contains(key)){
+            System.out.println(key);
             this.arr_clients.add(key);
             this.arr_map.put(key,data);
             this.setChanged();
             this.notifyObservers("new client");
             this.clearChanged();
         }
-        
+                
         ml.setArr_clients(this.arr_clients);
         ml.setArr_map(this.arr_map);
             
@@ -77,6 +84,16 @@ public class server_game extends Observable implements Runnable {
         this.clearChanged();
     }
     
+    public void ClientDisconnect(String client){
+        this.arr_clients.remove(client);
+        this.arr_map.remove(client);
+        ml.setArr_clients(this.arr_clients);
+        ml.setArr_map(this.arr_map);
+        
+        this.setChanged();
+        this.notifyObservers("reload_clients");
+        this.clearChanged();
+    }
     
     
 
@@ -93,26 +110,7 @@ public class server_game extends Observable implements Runnable {
             while(true){
                 client = server.accept();
                 System.out.println("Client connected");
-
-                input = new DataInputStream(client.getInputStream());
-                output = new DataOutputStream(client.getOutputStream());
-                
-         
-
-                String msg = input.readUTF();
-                System.out.println(msg);
-                this.splitRead(msg);
-
-                
-                //  Set notify to send to view
-                this.setChanged();
-                this.notifyObservers(msg);
-                this.clearChanged();
-                
-
-                client.close();
-                
-                System.out.println("Client disconected");
+                new EchoThread(client,this).start();
             }
         } 
         catch (IOException ex) {

@@ -172,18 +172,26 @@ public class client_view extends javax.swing.JFrame implements Observer {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btn_clientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_clientActionPerformed
-        int c_port = Integer.parseInt(txt_port_c.getText());
-        int h_port = Integer.parseInt(txt_port_h.getText());
-        String host = this.txt_host.getText();
-        String nick="";
-        try {
-            nick = "conn:"+txt_nick.getText()+"|"+this.getIP()+"|"+this.txt_port_h.getText();
-        } catch (UnknownHostException ex) {
-            Logger.getLogger(client_view.class.getName()).log(Level.SEVERE, null, ex);
+        if(this.btn_client.getText().equals("Conectar")){
+            int c_port = Integer.parseInt(txt_port_c.getText());
+            int h_port = Integer.parseInt(txt_port_h.getText());
+            String host = this.txt_host.getText();
+            String nick="";
+            try {
+                nick = "conn:"+txt_nick.getText()+"|"+this.getIP()+"|"+this.txt_port_h.getText();
+            } catch (UnknownHostException ex) {
+                Logger.getLogger(client_view.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
+    //        this.start_server(h_port);
+            this.start_client(host,c_port,nick);
+            this.btn_client.setText("Desconectar");
+        }else{
+            String str = "QUIT:"+txt_nick.getText();
+            client.send_message(str);
+            client.end_connection();
+            this.btn_client.setText("Conectar");
         }
-        
-//        this.start_server(h_port);
-        this.start_client(host,c_port,nick);
     }//GEN-LAST:event_btn_clientActionPerformed
 
     private void btn_mainActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btn_mainActionPerformed
