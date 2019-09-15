@@ -17,9 +17,10 @@ import java.awt.image.FilteredImageSource;
 import java.awt.image.ImageFilter;
 import java.awt.image.ImageProducer;
 import java.awt.image.RGBImageFilter;
-import java.io.File;
+import java.io.ByteArrayInputStream;
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.xml.bind.DatatypeConverter;
 import principalvj.Sprites_String;
 
 /**
@@ -62,15 +63,18 @@ public class Panel_VJ extends JPanel {
         // Calcular posición inicial
         Dimension dimension = this.getSize();
         this.player_pX = dimension.width/2 - this.player.getW()/2;
-        this.player_pY = dimension.height - (this.player.getH() * 2);
+        this.player_pY = dimension.height - (this.player.getH() + (this.player.getH()/6));
     }
     
     // Función para cargar imagen
-    private Image cargarImagen(String file) {
+    private Image cargarImagen(String strImgData) {
         Image myImg = null;
         try{
+            // Variable
+            byte[] imageBytes = DatatypeConverter.parseBase64Binary(strImgData);
+            BufferedImage buferImg = ImageIO.read(new ByteArrayInputStream(imageBytes));
+            // Cargar imagen
             Dimension dimension = this.getSize();
-            BufferedImage buferImg = ImageIO.read(new File(file));
             myImg = buferImg.getScaledInstance(dimension.width, dimension.height, Image.SCALE_SMOOTH);
         }catch(Exception e){
             e.printStackTrace();
@@ -94,7 +98,7 @@ public class Panel_VJ extends JPanel {
                 this.player.setSpritesRow(0);
                 break;
             case "RUN":
-                this.player.setSpritesRow(2);
+                this.player.setSpritesRow(1);
                 break;
         }
         // Recuperar sprite del player y hacerlo transparente

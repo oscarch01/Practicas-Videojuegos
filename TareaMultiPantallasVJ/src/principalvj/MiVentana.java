@@ -5,13 +5,15 @@
  */
 package principalvj;
 
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import vistasvj.VideoJuego;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import javax.swing.JFrame;
 import vistasvj.Principal;
 import vistasvj.Cliente;
 import vistasvj.Servidor;
-import vistasvj.VideoJuego;
 
 /**
  *
@@ -22,7 +24,8 @@ public class MiVentana extends JFrame{
     private Principal jpPrincipal = null;
     private Cliente jpCliente = null;
     private Servidor jpServidor = null;
-    private VideoJuego jpVideoJuego = null;
+    private VideoJuego jpJuego = null;
+    
     // Constructor
     public MiVentana(int w, int h) {
         // Ajustes de ventana
@@ -31,6 +34,38 @@ public class MiVentana extends JFrame{
         // Crear panel principal
         this.jpPrincipal = new Principal(this);
         this.getContentPane().add(this.jpPrincipal);
+        // Definir evento Key
+        this.addKeyListener(new KeyListener() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // Movimiento
+                if (jpJuego != null) {
+                    int keyC = e.getKeyCode();
+                    if ((keyC == 37) || (keyC == 39)) {
+                        // Actualizar codigo de tecla precionado
+                        jpJuego.setKeyCodePressed(keyC);
+                        // Actualizar canvas
+                        jpJuego.windowsPanelUpdate();
+                    }
+                }
+            }
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+            @Override
+            public void keyReleased(KeyEvent e) {
+                // Movimiento
+                if (jpJuego != null) {
+                    int keyC = e.getKeyCode();
+                    if ((keyC == 37) || (keyC == 39)) {
+                        // Actualizar codigo de tecla precionado
+                        jpJuego.setKeyCodePressed(0);
+                        // Actualizar canvas
+                        jpJuego.windowsPanelUpdate();
+                    }
+                }
+            }
+        });
     }
     // ----------------------------------------------------------
     // ----------------------------------------------------------
@@ -86,14 +121,15 @@ public class MiVentana extends JFrame{
         // Remueve todos los componentes
         this.getContentPane().removeAll();
         // Crear panel servidor si no existe
-        if (this.jpVideoJuego == null) {
-            this.jpVideoJuego = new VideoJuego(this);
+        if (this.jpJuego == null) {
+            this.jpJuego = new VideoJuego(this);
         }
         // Agregar panel a la ventana y exponerlo
-        this.getContentPane().add(this.jpVideoJuego);
+        this.getContentPane().add(this.jpJuego);
+        this.setLocationRelativeTo(null);
         this.revalidate();
-        this.pack();
-    }
+        this.pack(); 
+   }
     // Términar con el panel de Juego
     public void endGameView() {
         // Remueve todos los componentes
