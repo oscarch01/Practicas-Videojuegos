@@ -24,6 +24,7 @@ public class server_game extends Observable implements Runnable {
     
     public Map<String,String> arr_map = new HashMap<String,String>();
     public ArrayList arr_clients = new ArrayList();
+    public ArrayList<EchoThread> threadsWorking = new ArrayList<EchoThread>();
     
     public ServerSocket server;
     public Socket client;
@@ -85,8 +86,10 @@ public class server_game extends Observable implements Runnable {
     }
     
     public void ClientDisconnect(String client){
+        int i = this.arr_clients.indexOf(client);
         this.arr_clients.remove(client);
         this.arr_map.remove(client);
+        this.threadsWorking.remove(i);
         ml.setArr_clients(this.arr_clients);
         ml.setArr_map(this.arr_map);
         
@@ -95,7 +98,17 @@ public class server_game extends Observable implements Runnable {
         this.clearChanged();
     }
     
+    public void broadcast(String str){
+        for (EchoThread thread : this.threadsWorking) {
+            thread.newmsg(str);
+        }
+    }
     
+    public void broadcastbytes(String str){
+        for (EchoThread thread : this.threadsWorking) {
+            thread.tobytes(str);
+        }
+    }
 
     @Override
     public void run() {
@@ -110,7 +123,9 @@ public class server_game extends Observable implements Runnable {
             while(true){
                 client = server.accept();
                 System.out.println("Client connected");
-                new EchoThread(client,this).start();
+                EchoThread et = new EchoThread(client,this);
+                et.start();
+                this.threadsWorking.add(et);
             }
         } 
         catch (IOException ex) {

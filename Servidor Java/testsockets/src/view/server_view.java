@@ -1,5 +1,7 @@
 package view;
 
+import base64work.principalvj.MiVentana;
+import base64work.vistasvj.Servidor;
 import java.io.IOException;
 import java.net.*;
 import java.util.ArrayList;
@@ -221,6 +223,11 @@ public class server_view extends javax.swing.JFrame implements Observer {
                 btn_server.setText("Detener");
                 txt_port.disable();
                 this.start_server(Integer.parseInt(txt_port.getText()));
+                MiVentana selector = new MiVentana(800,600);
+                selector.setServerView(this.server);
+                selector.setResizable(false);
+                selector.setVisible(true);
+                selector.setFocusable(true);
             }
             txt_port.requestFocus();
         }

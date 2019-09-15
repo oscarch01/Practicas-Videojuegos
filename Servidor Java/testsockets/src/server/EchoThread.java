@@ -18,10 +18,21 @@ import java.net.Socket;
 public class EchoThread extends Thread {
     protected Socket socket;
     protected server_game sg;
+    protected String msg = "";
+    protected String msgnew = "";
+    protected String tobytes = "";
     
     public EchoThread (Socket clientSocket,server_game sg){
         this.socket = clientSocket;
         this.sg = sg;
+    }
+    
+    public void newmsg(String str){
+        this.msgnew = str;
+    }
+    
+    public void tobytes(String str){
+        this.tobytes = str;
     }
     
     public void run(){
@@ -31,10 +42,19 @@ public class EchoThread extends Thread {
             input = new DataInputStream(this.socket.getInputStream());
             output = new DataOutputStream(this.socket.getOutputStream());
 
-            String msg = "";
             while(socket.isConnected()){
-                msg = input.readUTF();
-                System.out.println(msg);            
+                if(!msg.equals(msgnew)){
+                    output.writeUTF(msgnew); 
+                    msg = msgnew;
+                }
+                if(!tobytes.equals("")){
+                    output.write(tobytes.getBytes("UTF-8")); 
+                    tobytes = "";
+                }
+                if(input.available()>0){
+                    msg = input.readUTF();
+                    System.out.println(msg);                
+                }
                 if(sg.splitRead(msg)[0].equals("QUIT")){
                     this.socket.close();
                     System.out.println("Client disconected");
