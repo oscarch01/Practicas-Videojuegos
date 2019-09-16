@@ -109,21 +109,25 @@ public class VideoJuego extends javax.swing.JPanel {
         this.panelVJ.repaint();
         // Notificar a srv
         if (this.ceCliente != null) {
-            String strLimt = this.panelVJ.getInLimit();
             String msj = "";
+            String strLimt = this.panelVJ.getInLimit();
             String actualNKinS = this.ceCliente.getActualNKinS();
-            
-            if ((actualNKinS != "") || !actualNKinS.equals("")) {
-                if ((strLimt == "") || strLimt.equals("")) {
-                    msj = "ord:" + this.nickName + "_" + this.panelVJ.getActionD();
-                } else {
-                    if ((strLimt == "LEFT") || strLimt.equals("LEFT")) {
-                        msj = "prev:" + this.nickName + "_" + strLimt;
+            if ((actualNKinS == this.nickName) || actualNKinS.equals(this.nickName)) {
+                if ((actualNKinS != "") || !actualNKinS.equals("")) {
+                    if ((strLimt != "") && !strLimt.equals("")) {
+                        if ((strLimt == "LEFT") || strLimt.equals("LEFT")) {
+                            msj = "prev:" + this.nickName + "_" + strLimt;
+                        } else {
+                            msj = "next:" + this.nickName + "_" + strLimt;
+                        }
                     } else {
-                        msj = "next:" + this.nickName + "_" + strLimt;
+                        msj = "ord:" + this.nickName + "_" + this.panelVJ.getActionD();
                     }
+                    this.ceCliente.send_message(msj);
                 }
-                this.ceCliente.send_message(msj);
+            } else {
+                this.panelVJ.setInLimit("");
+                this.ceCliente.send_message("");
             }
         }
     }

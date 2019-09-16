@@ -21,8 +21,8 @@ public class CEClient implements Runnable {
     public Socket client;
     private int port;
     private String host;
-    private String msg = "";
-    private String msgnew = "";
+    private String __msg = "";
+    private String o_msgnew = "";
     private String s_msgnew = "";
     private Boolean s_msjSend = false;
     private boolean status = true;
@@ -35,7 +35,7 @@ public class CEClient implements Runnable {
         this.myNickMon = nk;
         this.host = host;
         this.port = port;
-        this.msgnew = msg;
+        this.o_msgnew = msg;
         this.s_msgnew = msg;
         this.vtnVJ = cv;
     }
@@ -51,26 +51,32 @@ public class CEClient implements Runnable {
     }
     
     public void send_message(String msg){
-        if ((s_msgnew != "") && !s_msgnew.equals("")) {
-            this.msgnew = this.s_msgnew;
-        } else {
-            this.msgnew = msg;
+        if (msg.contains("QUIT:")) {
+            this.s_msgnew = msg;
+            this.s_msjSend = false;
         }
-        
+        if ((s_msgnew != "") && !s_msgnew.equals("")) {
+            this.o_msgnew = this.s_msgnew;
+        } else {
+            this.o_msgnew = msg;
+        }
+    }
+    
+    public Boolean getIsTheMsjSend () {
+        return this.s_msjSend; 
     }
 
     // Hilo
     @Override
     public void run() {
         try {
-            client = new Socket(host,port);
+            client = new Socket(host, port);
             DataInputStream input = null;
             DataOutputStream output = null;
             input = new DataInputStream(client.getInputStream());
             output = new DataOutputStream(client.getOutputStream());
             while(client.isConnected()){
                 if (!s_msjSend && (s_msgnew != "") && !s_msgnew.equals("")) {
-                    System.out.println("Cliente----" + s_msgnew);
                     output.writeUTF(s_msgnew); 
                     s_msjSend = true;
                     output.flush();
@@ -115,7 +121,11 @@ public class CEClient implements Runnable {
 
                             this.vtnVJ.getPanelVJ().setImgToBG(iBG);
                             this.vtnVJ.getPanelVJ().setImgToPY(iPY);
-
+                            
+                            if (!this.actNickinS.equals(t_nK) && (this.actNickinS != t_nK)) {
+                                o_msgnew = "";
+                            }
+                            
                             this.vtnVJ.getPanelVJ().setNuevaPos(t_oR, t_nK);
                             this.actNickinS = t_nK;
 
@@ -130,11 +140,18 @@ public class CEClient implements Runnable {
                             continue;
                         }
                     }
-                    if(!msg.equals(msgnew)){
-                        System.out.println("Cliente-S: " + msgnew);
-                        output.writeUTF(msgnew); 
-                        msg = msgnew;
+                    if(!__msg.equals(o_msgnew)){
+                        System.out.println("Cliente-S: " + o_msgnew);
+                        output.writeUTF(o_msgnew); 
+                        __msg = o_msgnew;
                         output.flush();
+                        // Validar
+                        if (__msg.contains("next:") || __msg.contains("prev:")) {
+                            __msg = "";
+                            if (!this.actNickinS.equals(this.myNickMon) && (this.actNickinS != this.myNickMon)) {
+                                o_msgnew = "";
+                            }
+                        }
                     }
                     if(!status){
                         client.close();

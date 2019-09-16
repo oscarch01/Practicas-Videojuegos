@@ -260,7 +260,10 @@ public class Panel_VJ extends JPanel {
     // Función para cancelar movimiento del player
     public void player_cancelMov(){
         this.player_ActionS = "IDLE";
-        this.enLimite = "";
+    }
+    
+    public void setInLimit(String strLim) {
+        this.enLimite = strLim;
     }
     
     public String getInLimit() {
@@ -302,9 +305,9 @@ public class Panel_VJ extends JPanel {
         this.isMyTurn = isMTurn;
         // Validar
         if ((orient == "LEFT") || orient.equals("LEFT")) {
-            //this.player_movToRight();
+            this.player_movToRight();
         } else {
-            //this.player_movToLeft();
+            this.player_movToLeft();
         }
     }
     

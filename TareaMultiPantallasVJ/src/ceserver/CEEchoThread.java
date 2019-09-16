@@ -18,7 +18,8 @@ import java.net.Socket;
 public class CEEchoThread extends Thread {
     protected Socket socket;
     protected CEServer ceSrv;
-    protected String msgBs = "";
+    protected String msgBs1 = "";
+    protected String msgBs2 = "";
     protected String msgnew = "";
     protected BufferedImage im;
     private Boolean bandConn = false;
@@ -42,8 +43,8 @@ public class CEEchoThread extends Thread {
                 // Recuperar parametros
                 String recMSj = "";
                 if(input.available()>0){
-                    msgBs = input.readUTF();
-                    recMSj = ceSrv.splitRead(msgBs)[0];
+                    msgBs1 = input.readUTF();
+                    recMSj = ceSrv.splitRead(msgBs1)[0];
                 }
                 // Validar conexion
                 if (!bandConn && recMSj.equals("conn")) {
@@ -60,14 +61,15 @@ public class CEEchoThread extends Thread {
                     } else {
                         // EJECUTAR
                         if (input.available()>0) {
-                            System.out.println("Servidor-R: " + msgBs);
-                            ceSrv.splitEject(msgBs);
+                            System.out.println("Servidor-R: " + msgBs1);
+                            ceSrv.splitEject(msgBs1);
                         }
                         // MENSAJE
-                        if(!msgBs.equals(msgnew)){
+                        msgnew = this.ceSrv.getSrv().getOrdenActual();
+                        if(!msgBs2.equals(msgnew)){
                             System.out.println("Servidor-S: " + msgnew);
                             output.writeUTF(msgnew); 
-                            msgBs = msgnew;
+                            msgBs2 = msgnew;
                             output.flush();
                         }
                     }

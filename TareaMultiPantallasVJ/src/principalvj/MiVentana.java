@@ -8,6 +8,8 @@ package principalvj;
 import ceclient.CEClient;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import vistasvj.VideoJuego;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -67,6 +69,14 @@ public class MiVentana extends JFrame{
                 }
             }
         });
+        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                closeGameCnx();
+                System.exit(0);
+            }
+        });
     }
     // ----------------------------------------------------------
     // ----------------------------------------------------------
@@ -118,11 +128,13 @@ public class MiVentana extends JFrame{
     // Variables cliente
     private CEClient ceClient = null;
     private Thread hiloS = null;
+    private String tempNickName = "";
     
     // Muestra panel de Juego
     public void startGameView(String host, String nick, int c_port, int h_port) {
         // Prepara parametros
         String dataMesaje = "";
+        this.tempNickName = nick;
         try {
             dataMesaje = "conn:"+nick+"|"+this.getIP()+"|"+h_port;
         } catch (UnknownHostException ex) {
@@ -156,8 +168,21 @@ public class MiVentana extends JFrame{
     
     // Términar con el panel de Juego
     public void endGameView() {
+        // Términar
+        this.closeGameCnx();
         // Remueve todos los componentes
         this.setClientView();
+    }
+    
+    // Términar con el panel de Juego
+    public void closeGameCnx() {
+        // Términar
+        if (this.ceClient != null) {
+            this.ceClient.send_message("QUIT:" + this.tempNickName);
+            while (!this.ceClient.getIsTheMsjSend()) {
+            }
+            this.ceClient.end_connection();
+        }
     }
     // ----------------------------------------------------------
     // ----------------------------------------------------------

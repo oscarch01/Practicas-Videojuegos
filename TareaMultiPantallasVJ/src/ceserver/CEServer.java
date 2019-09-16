@@ -62,18 +62,18 @@ public class CEServer extends Observable implements Runnable {
                         this.actOrienta = this.ordL;
                     }
                     // Cambiar monitor        
-                    int i = this.arr_clients.indexOf(client);
+                    int i = this.arr_clients.indexOf(this.actMonitor);
                     if (this.arr_clients.size() > (i + 1)) {
                         i += 1;
-                        this.actOrienta = this.ordR;
                     } else {
                         if (0 <= (i - 1)) {
                             i -= 1;
-                            this.actOrienta = this.ordL;
                         }
                     }
                     String nMon = (String) this.arr_clients.get(i).toString();
-                    this.actMonitor = nMon;
+                    if (this.arr_clients.contains((Object) nMon)) {
+                        this.actMonitor = nMon;
+                    }
                 }
                 break;
             }
@@ -86,18 +86,18 @@ public class CEServer extends Observable implements Runnable {
                         this.actOrienta = this.ordL;
                     }
                     // Cambiar monitor        
-                    int i = this.arr_clients.indexOf(client);
+                    int i = this.arr_clients.indexOf(this.actMonitor);
                     if (0 <= (i - 1)) {
                         i -= 1;
-                        this.actOrienta = this.ordL;
                     } else {
                         if (this.arr_clients.size() > (i + 1)) {
                            i += 1;
-                           this.actOrienta = this.ordR;
                         }   
                     }
                     String nMon = (String) this.arr_clients.get(i).toString();
-                    this.actMonitor = nMon;
+                    if (this.arr_clients.contains((Object) nMon)) {
+                        this.actMonitor = nMon;
+                    }
                 }
                 break;
             }
@@ -136,7 +136,6 @@ public class CEServer extends Observable implements Runnable {
         String key = arr[0];
         String data = arr[1]+","+arr[2];
         if(!ceMaps_Lists.arr_clients.contains(key)){
-            System.out.println(key);
             this.arr_clients.add(key);
             this.arr_map.put(key,data);
             this.setChanged();
@@ -149,7 +148,6 @@ public class CEServer extends Observable implements Runnable {
                     this.actMonitor = key;
                 }
             }
-            System.out.println("Servidor Conectado");
         }
         
         ceMaps_Lists.setArr_clients(this.arr_clients);
@@ -176,29 +174,37 @@ public class CEServer extends Observable implements Runnable {
         
         // Validar
         if (this.arr_clients.size() > 0) {
-            // Calcular nuevo monitor
-            if (i == 0) {
-                if (this.arr_clients.size() > 0) {
-                    client = this.arr_clients.get(i).toString();
+            // Bandera
+            Boolean bandNV = false;
+            // Calcular
+            while (!bandNV) {
+                // Calcular nuevo monitor
+                if (i == 0) {
+                    if (this.arr_clients.size() > 0) {
+                        client = this.arr_clients.get(i).toString();
+                    }
+                    this.actOrienta = this.ordL;
+                } else {
+                   if ((i - 1) >= 0) {
+                       i -= 1;
+                       this.actOrienta = this.ordR;
+                   } else if (this.arr_clients.size() > (i + 1)) {
+                       i += 1;
+                       this.actOrienta = this.ordL;
+                   } else {
+                       this.actOrienta = this.ordR;
+                   }
+                   client = this.arr_clients.get(i).toString();
                 }
-                this.actOrienta = this.ordL;
-            } else {
-               if ((i - 1) >= 0) {
-                   i -= 1;
-                   this.actOrienta = this.ordL;
-               } else if (this.arr_clients.size() > (i + 1)) {
-                   i += 1;
-                   this.actOrienta = this.ordR;
-               } else {
-                   this.actOrienta = this.ordL;
-               }
-               client = this.arr_clients.get(i).toString();
+                if (this.arr_clients.contains((Object) client)) {
+                    // Indicar que aqui debera estar el palyer
+                    if ((this.actMonitor != client) && !this.actMonitor.equals(client)) {
+                        bandNV = true;
+                        this.actMonitor = client;
+                        this.vtnSrv.notificarA_Monitores();
+                    }
+                }
             }
-            // Indicar que aqui debera estar el palyer
-            if ((this.actMonitor != client) && !this.actMonitor.equals(client)) {
-                this.actMonitor = client;
-            }
-            this.vtnSrv.notificarA_Monitores();
         }
     }
     
