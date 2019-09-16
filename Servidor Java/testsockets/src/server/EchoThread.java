@@ -5,11 +5,13 @@
  */
 package server;
 
+import java.awt.image.BufferedImage;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -21,6 +23,8 @@ public class EchoThread extends Thread {
     protected String msg = "";
     protected String msgnew = "";
     protected String tobytes = "";
+    protected BufferedImage im;
+    protected boolean imgsend = false;
     
     public EchoThread (Socket clientSocket,server_game sg){
         this.socket = clientSocket;
@@ -35,6 +39,11 @@ public class EchoThread extends Thread {
         this.tobytes = str;
     }
     
+    public void imgsend(BufferedImage im){
+        this.im = im;
+        imgsend = true;
+    }
+    
     public void run(){
         DataInputStream input = null;
         DataOutputStream output = null;
@@ -46,10 +55,17 @@ public class EchoThread extends Thread {
                 if(!msg.equals(msgnew)){
                     output.writeUTF(msgnew); 
                     msg = msgnew;
+                    output.flush();
                 }
                 if(!tobytes.equals("")){
-                    output.write(tobytes.getBytes("UTF-8")); 
+                    output.write(tobytes.getBytes()); 
                     tobytes = "";
+                    output.flush();
+                }
+                if(imgsend){
+                    ImageIO.write(im, "png", output);
+                    imgsend = false;
+                    output.flush();
                 }
                 if(input.available()>0){
                     msg = input.readUTF();

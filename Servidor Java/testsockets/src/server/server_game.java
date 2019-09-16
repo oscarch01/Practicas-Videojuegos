@@ -4,6 +4,7 @@
 
 package server;
 
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.io.IOException;
 import java.net.*;
@@ -107,6 +108,12 @@ public class server_game extends Observable implements Runnable {
     public void broadcastbytes(String str){
         for (EchoThread thread : this.threadsWorking) {
             thread.tobytes(str);
+        }
+    }
+    
+    public void broadcastimg(BufferedImage im){
+        for (EchoThread thread : this.threadsWorking) {
+            thread.imgsend(im);
         }
     }
 

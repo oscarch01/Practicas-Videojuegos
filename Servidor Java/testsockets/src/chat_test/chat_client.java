@@ -4,6 +4,7 @@ import client.client_game;
 import java.util.Observable;
 import java.util.Observer;
 import server.server_game;
+import view.client_view;
 
 /**
  *
@@ -89,7 +90,7 @@ public class chat_client extends javax.swing.JFrame implements Observer {
         String msg = "2:\n"+this.txt_2.getText()+"\n";
         this.txt_area_2.append(msg);
         
-        client_game client = new client_game("192.168.1.128",6000,msg);
+        client_game client = new client_game("192.168.1.128",6000,msg,new client_view());
         Thread t = new Thread(client);
         t.start();        
     }//GEN-LAST:event_send_2ActionPerformed

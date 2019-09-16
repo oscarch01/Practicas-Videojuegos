@@ -32,6 +32,11 @@ public class Sprites_Player {
     // -----------------------------------------------------------------
     // -----------------------------------------------------------------
     
+    public BufferedImage[][] getAllSprites(){
+        return sprites;
+    }
+    
+    
     private ArrayList<String> getNomsOfImgsIn (String ruta) {
         // Variables
         ArrayList<String> listNomsOfImgs = new ArrayList<String>();

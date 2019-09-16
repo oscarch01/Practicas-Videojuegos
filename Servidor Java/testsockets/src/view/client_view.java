@@ -45,11 +45,22 @@ public class client_view extends javax.swing.JFrame implements Observer {
     
     
     public void start_client(String c_ip,int c_port,String msg){
-        client = new client_game(c_ip,c_port,msg);
+        client = new client_game(c_ip,c_port,msg,this);
         t_client = new Thread(client);
         t_client.start();    
     }
     
+    //  Descomposición de la lectura
+    public String[] splitRead(String read){
+        String[] arr = read.split(":");
+        switch(arr[0]){
+            //  Conectar cliente    
+            default:{
+                System.out.println("llego mas");
+            }
+        }
+        return arr;
+    }
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

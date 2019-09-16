@@ -13,6 +13,11 @@ import base64work.principalvj.MiVentana;
 import base64work.subpanelesvj.Panel_BG;
 import base64work.subpanelesvj.Panel_PY;
 import base64work.principalvj.Sprites_Player;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import javax.imageio.ImageIO;
 import server.server_game;
 /**
  *
@@ -27,6 +32,7 @@ public class Servidor extends javax.swing.JPanel {
     private Panel_PY panelPY = null;
     private String BASE64_BG = null;
     private String BASE64_PY = null;
+    ArrayList<String> strings = new ArrayList<String>();
     /**
      * Creates new form Servidor
      */
@@ -97,6 +103,14 @@ public class Servidor extends javax.swing.JPanel {
         // Actualizar canvas
         this.panelBG.repaint();
         this.panelPY.repaint();
+    }
+    
+    public void stringDivider(String text){
+        int index = 0;
+        while (index < text.length()) {
+            strings.add(text.substring(index, Math.min(index + 100,text.length())));
+            index += 100;
+        }
     }
     
     /**
@@ -287,8 +301,40 @@ public class Servidor extends javax.swing.JPanel {
 
     private void start_gameActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_start_gameActionPerformed
         // TODO add your handling code here:
-        String str = "BG:"+this.BASE64_BG;
-        this.server.broadcastbytes(str);
+        this.server.broadcast("SENDIMG");
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        BufferedImage img = this.panelBG.getActualImg();    
+        this.server.broadcastimg(img);
+        System.out.println("Sending image");
+        BufferedImage[][] imgsp = this.panelPY.getBufferedImagArray();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        for (int x=0; x < imgsp.length; x++){
+            for (int y=0; y < imgsp[x].length; y++){
+                if(imgsp[x][y] != null){
+                    this.server.broadcast("SENDIMG");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                    this.server.broadcastimg(imgsp[x][y]);
+                    System.out.println("Sending image");
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Servidor.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }                  
+        }
     }//GEN-LAST:event_start_gameActionPerformed
 
     // ----------------------------------------------------------

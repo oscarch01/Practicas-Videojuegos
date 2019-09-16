@@ -95,6 +95,10 @@ public class Panel_PY extends JPanel{
         return this.strPlayers[this.positionActBG];
     }
     
+    public BufferedImage[][] getBufferedImagArray(){
+        return this.spPlayer.getAllSprites();
+    }
+    
     // Funcion para cambiar al siguiente objeto Sprites_Player
     public void nextImgsPlayer() {
         // Tomar número maximo de elementos

@@ -58,6 +58,10 @@ public class Panel_BG extends JPanel{
         return this.strImBd64[this.positionActBG];
     }
     
+    public BufferedImage getActualImg(){
+        return this.imgsBufer[this.positionActBG];
+    }
+    
     // ----------------------------------------------------------
     // ----------------------------------------------------------
     // ----------------------------------------------------------
