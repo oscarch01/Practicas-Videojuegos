@@ -145,7 +145,9 @@ public class CEServer extends Observable implements Runnable {
             
             // Indicar que aqui esta el palyer
             if ((this.actMonitor != key) && !this.actMonitor.equals(key)) {
-                this.actMonitor = key;
+                if ((this.actMonitor == "") || this.actMonitor.equals("")) {
+                    this.actMonitor = key;
+                }
             }
             System.out.println("Servidor Conectado");
         }
