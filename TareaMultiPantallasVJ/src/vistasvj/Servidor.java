@@ -5,8 +5,14 @@
  */
 package vistasvj;
 
+import ceserver.CEMaps_Lists;
+import ceserver.CEServer;
 import java.awt.Dimension;
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import principalvj.MiVentana;
@@ -17,20 +23,39 @@ import principalvj.Sprites_Player;
  *
  * @author Jorge
  */
-public class Servidor extends javax.swing.JPanel {
+public class Servidor extends javax.swing.JPanel implements Observer {
 
     // Variables
     private MiVentana ventana = null;
     private Thread hiloG;
+    private Thread hiloS;
+    
     private Panel_BG panelBG = null;
     private Panel_PY panelPY = null;
     private String BASE64_BG = null;
     private String BASE64_PY = null;
+    
+    private CEServer ceSrv = null;
+    
     /**
      * Creates new form Servidor
      */
     public Servidor() {
         initComponents();
+    }
+    
+    public void notificarA_Monitores() {
+        this.ceSrv.broadcast(this.getOrdenActual());
+    }
+    
+    public String getOrdenActual() {
+        String msj = "";
+        if (ceSrv != null) {
+            int iBG = this.panelBG.getPositionAct();
+            int iPY = this.panelPY.getPositionAct();
+            msj = iBG + "_" + iPY + "_" + ceSrv.actMonitor + "_" + ceSrv.actOrienta;
+        }
+        return msj;
     }
     
     public Servidor(MiVentana vtn) {
@@ -117,8 +142,8 @@ public class Servidor extends javax.swing.JPanel {
         txt_n_clientes = new javax.swing.JTextField();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
+        jButtonMP = new javax.swing.JButton();
+        jButtonSrv = new javax.swing.JButton();
         jPanelBG = new javax.swing.JPanel();
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
@@ -156,17 +181,17 @@ public class Servidor extends javax.swing.JPanel {
         ));
         jScrollPane1.setViewportView(jTable1);
 
-        jButton1.setText("Menú principal");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        jButtonMP.setText("Menú principal");
+        jButtonMP.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                jButtonMPActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Iniciar");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        jButtonSrv.setText("Iniciar");
+        jButtonSrv.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                jButtonSrvActionPerformed(evt);
             }
         });
 
@@ -249,9 +274,9 @@ public class Servidor extends javax.swing.JPanel {
                                     .addComponent(txt_n_clientes)))
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                    .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jButtonMP, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                    .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jButtonSrv, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 339, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(133, 133, 133)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -263,9 +288,7 @@ public class Servidor extends javax.swing.JPanel {
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(jButton3)
                                     .addComponent(jButton5)))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jPanelPY, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addComponent(jPanelPY, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(jPanelBG, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addGap(90, 90, 90)))
                 .addContainerGap())
@@ -295,8 +318,8 @@ public class Servidor extends javax.swing.JPanel {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
-                            .addComponent(jButton2)))
+                            .addComponent(jButtonMP)
+                            .addComponent(jButtonSrv)))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jPanelBG, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGap(18, 18, 18)
@@ -317,21 +340,39 @@ public class Servidor extends javax.swing.JPanel {
     // ----------------------------------------------------------
     // ----------------------------------------------------------
     // Regresar al menú principal
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void jButtonMPActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonMPActionPerformed
         // TODO add your handling code here:
         if (this.ventana != null) {
             this.ventana.setPrincipalView();
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_jButtonMPActionPerformed
 
     // Iniciar proceso del servidor
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void jButtonSrvActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonSrvActionPerformed
         // TODO add your handling code here:
+        // Deshabilitar otros botones
+        this.jButtonMP.setEnabled(false);
+        this.jButtonMP.disable();
+        // Variables
         String txt_srv_ip = this.txt_server_ip.getText();
         String txt_n_cli = this.txt_n_clientes.getText();
         String txt_port = this.txt_port.getText();
         // Iniciar servidor
-    }//GEN-LAST:event_jButton2ActionPerformed
+        if ((txt_port != null) && !txt_port.equals("")) {
+            this.txt_server_ip.disable();
+            this.txt_port.disable();
+            this.txt_port.setEditable(false);
+            this.txt_port.setEnabled(false);
+            
+            ceSrv = new CEServer(Integer.parseInt(txt_port), this);
+            ceSrv.addObserver(this);
+            this.hiloS = new Thread(ceSrv);
+            this.hiloS.start();
+            
+            this.jButtonSrv.setEnabled(false);
+            this.jButtonSrv.disable();
+        }
+    }//GEN-LAST:event_jButtonSrvActionPerformed
     
     // ----------------------------------------------------------
     // ----------------------------------------------------------
@@ -341,12 +382,16 @@ public class Servidor extends javax.swing.JPanel {
         // TODO add your handling code here:
         this.panelBG.prevImgToBG();
         this.BASE64_BG = this.panelBG.getActualImgAsString();
+        
+        this.notificarA_Monitores();
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
         // TODO add your handling code here:
         this.panelBG.nextImgToBG();
         this.BASE64_BG = this.panelBG.getActualImgAsString();
+        
+        this.notificarA_Monitores();
     }//GEN-LAST:event_jButton3ActionPerformed
 
     // ----------------------------------------------------------
@@ -357,24 +402,28 @@ public class Servidor extends javax.swing.JPanel {
         // TODO add your handling code here:
         this.panelPY.prevImgsPlayer();
         this.BASE64_PY = this.panelPY.getActualImgAsString();
+        
+        this.notificarA_Monitores();
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
         this.panelPY.nextImgsPlayer();
         this.BASE64_PY = this.panelPY.getActualImgAsString();
+        
+        this.notificarA_Monitores();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     // ----------------------------------------------------------
     // ----------------------------------------------------------
     // ----------------------------------------------------------
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
+    private javax.swing.JButton jButtonMP;
+    private javax.swing.JButton jButtonSrv;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -388,4 +437,18 @@ public class Servidor extends javax.swing.JPanel {
     private javax.swing.JTextField txt_port;
     private javax.swing.JTextField txt_server_ip;
     // End of variables declaration//GEN-END:variables
+
+    private CEMaps_Lists ceMaps_Lists = null;
+    @Override
+    public void update(Observable o, Object o1) {
+        switch((String)o1){
+            case "reload_clients":{
+                this.ceMaps_Lists = new CEMaps_Lists();
+                ArrayList arryClients = this.ceMaps_Lists.getArr_clients();
+                Map<String, String> arryMap = this.ceMaps_Lists.getArr_map();
+                break;
+            }
+        }
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

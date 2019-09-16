@@ -5,11 +5,12 @@
  */
 package vistasvj;
 
+import ceclient.CEClient;
 import java.awt.Dimension;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import principalvj.MiVentana;
-import principalvj.Main;
+import principalvj.Sprites_Player;
 import subpanelesvj.Panel_VJ;
 
 /**
@@ -17,12 +18,18 @@ import subpanelesvj.Panel_VJ;
  * @author Jorge
  */
 public class VideoJuego extends javax.swing.JPanel {
-
-     // Variables
+    
+    // Variables
     private MiVentana ventana = null;
     private Thread hiloG;
     private Panel_VJ panelVJ;
     private int keyCodePressed = 0;
+    private CEClient ceCliente = null;
+    private String nickName = "";
+    
+    public void setCEClient (CEClient ccc) {
+        this.ceCliente = ccc;
+    }
     
     // Función para cambiar el codigo de tecla
     public void setKeyCodePressed(int keyC) {
@@ -35,15 +42,31 @@ public class VideoJuego extends javax.swing.JPanel {
     public VideoJuego() {
         initComponents();
     }
+    
+    public Panel_VJ getPanelVJ() {
+        return this.panelVJ;
+    }
 
-    public VideoJuego(MiVentana vtn) {
+    public VideoJuego(MiVentana vtn, String nk) {
         initComponents();
+        this.nickName = nk;
         this.ventana = vtn;
         // Ajustes de ventana
         this.jPanelVJ.setSize(800, 560);
         Dimension dim = this.jPanelVJ.getSize();
         // Crear canvas        
-        this.panelVJ = new Panel_VJ(dim.width, dim.height, Main.CONSTANT_BG, Main.CONSTANT_SP);
+        this.panelVJ = new Panel_VJ(
+                this.nickName,
+                dim.width, dim.height,
+                new String[]{
+                    "./__imagenes/Esc/Escenario1.jpg",
+                    "./__imagenes/Esc/Escenario2.jpg"
+                },
+                new Sprites_Player[]{
+                    new Sprites_Player("./__imagenes/Player_1", 150l /*Idle - Right*/, 100l /* Walk - Right*/),
+                    new Sprites_Player("./__imagenes/Player_2", 150l /*Idle - Right*/, 100l /* Walk - Right*/)
+                }
+        );
         this.panelVJ.setVisible(true);
         this.jPanelVJ.add(this.panelVJ);
         this.jPanelVJ.setVisible(true);
@@ -84,6 +107,25 @@ public class VideoJuego extends javax.swing.JPanel {
         }
         // Actualizar canvas
         this.panelVJ.repaint();
+        // Notificar a srv
+        if (this.ceCliente != null) {
+            String strLimt = this.panelVJ.getInLimit();
+            String msj = "";
+            String actualNKinS = this.ceCliente.getActualNKinS();
+            
+            if ((actualNKinS != "") || !actualNKinS.equals("")) {
+                if ((strLimt == "") || strLimt.equals("")) {
+                    msj = "ord:" + this.nickName + "_" + this.panelVJ.getActionD();
+                } else {
+                    if ((strLimt == "LEFT") || strLimt.equals("LEFT")) {
+                        msj = "prev:" + this.nickName + "_" + strLimt;
+                    } else {
+                        msj = "next:" + this.nickName + "_" + strLimt;
+                    }
+                }
+                this.ceCliente.send_message(msj);
+            }
+        }
     }
     
     /**

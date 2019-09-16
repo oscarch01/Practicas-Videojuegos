@@ -18,6 +18,9 @@ import sun.misc.BASE64Encoder;
  * @author Jorge
  */
 public class Sprites_Player {
+    // Variables de tamaño
+    private int width = 0;
+    private int height = 0;
     // Variables de posición con respesto a una lista de posiciones
     private int columnIni = 0;
     private int columnEnd = 0;
@@ -28,6 +31,24 @@ public class Sprites_Player {
     // Variables - Tiempo
     private Long startTime = 0l;
     private Long[] elapsedsTime = null;
+    
+    // -----------------------------------------------------------------
+    // -----------------------------------------------------------------
+    // -----------------------------------------------------------------
+    
+    // Función que devuelve el ancho para cada sprite
+    public int getW() {
+        return this.width;
+    }
+    
+    // Función que devuelve el alto para cada sprite
+    public int getH() {
+        return this.height;
+    }
+    
+    // -----------------------------------------------------------------
+    // -----------------------------------------------------------------
+    // -----------------------------------------------------------------
     
     // -----------------------------------------------------------------
     // -----------------------------------------------------------------
@@ -82,6 +103,12 @@ public class Sprites_Player {
                     String nameFile = rutaIdle + "/" + listNomImgsIdle.get(i);
                     // Cargar imagen
                     BufferedImage spriteFile = ImageIO.read(new File(nameFile));
+                    // Asignar nuevo tamaño
+                    int newW = spriteFile.getWidth();
+                    if (this.width < newW) {
+                        this.width = newW;
+                        this.height = spriteFile.getHeight();
+                    }
                     // Asignar Sprite en arreglo de Sprites
                     sprites[0][i] = spriteFile;
                 }
@@ -92,6 +119,12 @@ public class Sprites_Player {
                     String nameFile = rutaWalk + "/" + listNomImgsWalk.get(i);
                     // Cargar imagen
                     BufferedImage spriteFile = ImageIO.read(new File(nameFile));
+                    // Asignar nuevo tamaño
+                    int newW = spriteFile.getWidth();
+                    if (this.width < newW) {
+                        this.width = newW;
+                        this.height = spriteFile.getHeight();
+                    }
                     // Asignar Sprite en arreglo de Sprites
                     sprites[1][i] = spriteFile;
                 }

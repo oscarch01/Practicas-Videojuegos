@@ -5,6 +5,7 @@
  */
 package principalvj;
 
+import ceclient.CEClient;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import vistasvj.VideoJuego;
@@ -109,27 +110,50 @@ public class MiVentana extends JFrame{
         this.revalidate();
         this.pack();
     }
+    
+    // ---------------------------------------------
+    // ---------------------------------------------
+    // ---------------------------------------------
+    
+    // Variables cliente
+    private CEClient ceClient = null;
+    private Thread hiloS = null;
+    
     // Muestra panel de Juego
     public void startGameView(String host, String nick, int c_port, int h_port) {
         // Prepara parametros
-        String nickName = "";
+        String dataMesaje = "";
         try {
-            nickName = "conn:"+nick+"|"+this.getIP()+"|"+h_port;
+            dataMesaje = "conn:"+nick+"|"+this.getIP()+"|"+h_port;
         } catch (UnknownHostException ex) {
             // Logger.getLogger(client_view.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
         // Remueve todos los componentes
         this.getContentPane().removeAll();
         // Crear panel servidor si no existe
         if (this.jpJuego == null) {
-            this.jpJuego = new VideoJuego(this);
+            this.jpJuego = new VideoJuego(this, nick);
         }
+            
         // Agregar panel a la ventana y exponerlo
         this.getContentPane().add(this.jpJuego);
         this.setLocationRelativeTo(null);
         this.revalidate();
-        this.pack(); 
-   }
+        this.pack();
+        
+        // Iniciar cliente
+        this.ceClient = new CEClient(nick, host, c_port, dataMesaje, this.jpJuego);
+        hiloS = new Thread(this.ceClient);
+        hiloS.start();
+        
+        this.jpJuego.setCEClient(this.ceClient);
+    }
+    
+    // ---------------------------------------------
+    // ---------------------------------------------
+    // ---------------------------------------------
+    
     // Términar con el panel de Juego
     public void endGameView() {
         // Remueve todos los componentes

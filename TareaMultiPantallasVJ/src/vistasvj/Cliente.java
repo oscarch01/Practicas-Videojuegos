@@ -5,6 +5,7 @@
  */
 package vistasvj;
 
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +30,14 @@ public class Cliente extends javax.swing.JPanel {
     public Cliente(MiVentana vtn) {
         initComponents();
         this.ventana = vtn;
+        // Seguro
+        try {
+            InetAddress IP = InetAddress.getLocalHost();
+            String myIP = IP.getHostAddress();
+            txt_host.setText(myIP);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
     
     /**

@@ -28,6 +28,11 @@ public class Panel_BG extends JPanel{
     private int positionActBG = 0;
     private Image imgToBG_Actual = null;
     
+    // Devoler posición de elemento actuaql
+    public int getPositionAct() {
+        return this.positionActBG;
+    }
+    
     // Constructor
     public Panel_BG(int w, int h, String[] escenarios) {
         super();

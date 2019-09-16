@@ -314,7 +314,6 @@ public class server_view extends javax.swing.JFrame implements Observer {
                 break;
             }
         }
-        
     }
     
     

@@ -30,6 +30,11 @@ public class Panel_PY extends JPanel{
     private Sprites_Player spPlayer = null;
     private Sprites_Player[] playersBG = null;
     
+    // Devoler posición de elemento actuaql
+    public int getPositionAct() {
+        return this.positionActBG;
+    }
+    
     // Constructor
     public Panel_PY(int w, int h, Sprites_Player[] players) {
         super();
