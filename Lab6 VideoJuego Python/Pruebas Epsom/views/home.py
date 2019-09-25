@@ -10,10 +10,12 @@ qtCreatorFile = "views/home.ui" # Nombre del archivo aquí.
 Ui_MainWindow, QtBaseClass = uic.loadUiType(qtCreatorFile)
 
 class home(QtWidgets.QMainWindow, Ui_MainWindow):
+    # Constructor
     def __init__(self):
         QtWidgets.QMainWindow.__init__(self)
         Ui_MainWindow.__init__(self)
         self.setupUi(self)
+
         self.btn_server.clicked.connect(self.server_view)
         self.btn_client.clicked.connect(self.client_view)
         self.server_view = server_view()
