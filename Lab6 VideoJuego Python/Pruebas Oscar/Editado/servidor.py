@@ -62,6 +62,6 @@ class Servidor:
             siguienteJugador += 1
 
 if __name__ == "__main__":
-    srv = Servidor("192.168.1.131",5000)
+    srv = Servidor("192.168.1.78",5000)
     srv.conectar()
     srv.recibirConexion()
