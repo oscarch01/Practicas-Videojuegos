@@ -1,33 +1,39 @@
 import pygame
+import time
 from red import Red
 
-ancho = 800
-alto = 600
-ventana = pygame.display.set_mode((ancho,alto))
-pygame.display.set_caption("Cliente")
+class Cliente:
+    def __init__(self,ancho,alto,nombre):
+        self.ancho = ancho
+        self.alto = alto
+        self.ventana = pygame.display.set_mode((self.ancho,self.alto))
+        pygame.display.set_caption(nombre)
 
-def repintarVentana(ventana,avatares):
-    ventana.fill((255,255,255))
-    for avatar in avatares:
-        avatar.dibujar(ventana)
-    pygame.display.update()
+    def repintarVentana(self,ventana,avatares):
+        ventana.fill((255,255,255))
+        for avatar in avatares:
+            avatar.dibujar(ventana)
+        pygame.display.update()
 
-def main():
-    run = True
-    nt = Red("192.168.1.76",5000)
-    avatar = nt.obtenerPK()
-    clock = pygame.time.Clock()
-    
-    while run:
-        clock.tick(60)
-        avatares = nt.enviar(avatar)
+    def main(self):
+        run = True
+        nt = Red("192.168.1.131",5000)
+        avatar = nt.obtenerPK()
+        clock = pygame.time.Clock()
+        
+        while run:
+            clock.tick(60)
+            avatares = nt.enviar(avatar)
 
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-                pygame.quit()
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    run = False
+                    pygame.quit()
 
-        avatar.mover()
-        repintarVentana(ventana,avatares)
+            avatar.mover()
+            time.sleep(0.02)
+            self.repintarVentana(self.ventana,avatares)
 
-main()
+if __name__ == "__main__":
+    cn = Cliente(800,600,"Cliente")
+    cn.main()

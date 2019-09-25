@@ -12,14 +12,14 @@ class Red:
     def conectar(self):
         try:
             self.cliente.connect(self.direccion)
-            return pickle.loads(self.cliente.recv(2048))
+            return pickle.loads(self.cliente.recv(4096))
         except:
             pass
 
     def enviar(self, data):
         try:
             self.cliente.send(pickle.dumps(data))
-            return pickle.loads(self.cliente.recv(2048))
+            return pickle.loads(self.cliente.recv(4096))
         except socket.error as e:
             print(e)
     
