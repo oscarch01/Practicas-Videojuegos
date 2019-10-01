@@ -1,0 +1,5 @@
+<RCC>
+  <qresource prefix="uv_logo">
+    <file>uv_logo.png</file>
+  </qresource>
+</RCC>
